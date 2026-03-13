@@ -423,26 +423,33 @@
   <style>body { box-sizing: border-box; }</style>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
   <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" type="text/javascript"></script>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
   <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
  <body>
-  <div class="app-wrapper"><!-- Header -->
+  <div class="app-wrapper">
+   <!-- Header -->
    <div class="header">
     <h1>🎊 Eid Trip Bus Tracker</h1>
     <p>Colombo → Kandy Journey</p>
    </div><!-- Main Content -->
-   <div class="content"><!-- Tabs -->
-    <div class="tabs"><button class="tab active" data-tab="booking">📱 Book</button> <button class="tab" data-tab="dashboard">📊 Dashboard</button> <button class="tab" data-tab="admin">⚙️ Admin</button>
+   <div class="content">
+    <!-- Tabs -->
+    <div class="tabs">
+     <button class="tab active" data-tab="booking">📱 Book</button> <button class="tab" data-tab="dashboard">📊 Dashboard</button> <button class="tab" data-tab="admin">⚙️ Admin</button>
     </div><!-- Tab 1: Booking -->
     <div id="booking" class="tab-content active">
      <div class="section">
       <div class="message" id="message"></div>
-      <div class="form-group"><label>👤 Your Name</label> <select id="staffSelect"> <option value="">-- Choose name --</option> <option value="ROOHUL HAQ">ROOHUL HAQ</option> <option value="AASHIK">AASHIK</option> <option value="FAZLUR RAHMAN">FAZLUR RAHMAN</option> <option value="ABDUR RAHMAN">ABDUR RAHMAN</option> <option value="AC MUNEER">AC MUNEER</option> <option value="FM UMAIR">FM UMAIR</option> <option value="SHADIK">SHADIK</option> <option value="LUKMAN">LUKMAN</option> <option value="SAMEER">SAMEER</option> <option value="SM UMAIR">SM UMAIR</option> <option value="KM UMAIR">KM UMAIR</option> <option value="MAHIR MOULAVI">MAHIR MOULAVI</option> <option value="RIZVI MOULAVI">RIZVI MOULAVI</option> <option value="ASHRAF">ASHRAF</option> <option value="AROOS">AROOS</option> <option value="F AJMAL">F AJMAL</option> <option value="S AJMAL">S AJMAL</option> <option value="HAMMAD">HAMMAD</option> <option value="SHIYAM">SHIYAM</option> <option value="I M AMEEN">I M AMEEN</option> <option value="ABDUL AZEEZ FAZLUL">ABDUL AZEEZ FAZLUL</option> <option value="IRFAN">IRFAN</option> <option value="AC MUSHARRAF">AC MUSHARRAF</option> <option value="AKRAM MULAAFAR">AKRAM MULAAFAR</option> <option value="K R AASHIK">K R AASHIK</option> <option value="SHAKIR">SHAKIR</option> <option value="ABDUL QAIYOOM">ABDUL QAIYOOM</option> <option value="SAKEER">SAKEER</option> <option value="ZAKARIYYA">ZAKARIYYA</option> <option value="ABDULLA MOVLAVI">ABDULLA MOVLAVI</option> <option value="HASAN">HASAN</option> <option value="UMAR">UMAR</option> <option value="SHIHAM">SHIHAM</option> <option value="ASHROOQ">ASHROOQ</option> <option value="OTHER">✏️ Add my name</option> </select>
+      <div class="form-group">
+       <label>👤 Your Name</label> <select id="staffSelect"> <option value="">-- Choose name --</option> </select>
       </div>
-      <div class="form-group" id="customNameGroup" style="display: none;"><label>📝 Your Name</label> <input type="text" id="customName" placeholder="Type name...">
+      <div class="form-group" id="customNameGroup" style="display: none;">
+       <label>📝 Your Name</label> <input type="text" id="customName" placeholder="Type name...">
       </div>
-      <div class="form-group"><label>🚌 Bus Stop</label>
+      <div class="form-group">
+       <label>🚌 Bus Stop</label>
        <div class="stops-grid" id="stopsGrid"></div>
       </div><button class="btn btn-primary" id="confirmBtn">✓ Confirm</button>
      </div>
@@ -469,29 +476,40 @@
      <div class="section">
       <div class="admin-section">
        <h3>➕ Manual Add</h3>
-       <div class="form-group"><label>Staff Name</label> <input type="text" id="adminStaffName" placeholder="Enter name...">
+       <div class="form-group">
+        <label>Staff Name</label> <input type="text" id="adminStaffName" placeholder="Enter name...">
        </div>
-       <div class="form-group"><label>Stop</label> <select id="adminStopSelect"> <option value="">-- Select --</option> </select>
+       <div class="form-group">
+        <label>Stop</label> <select id="adminStopSelect"> <option value="">-- Select --</option> </select>
        </div><button class="btn btn-secondary" id="adminAddBtn">✓ Add</button>
       </div>
       <div class="admin-section">
        <h3>📍 Manage Stops</h3>
        <p>💡 One stop per line</p>
-       <div class="form-group"><textarea id="stopsTextarea" placeholder="Enter stops..."></textarea>
+       <div class="form-group">
+        <textarea id="stopsTextarea" placeholder="Enter stops..."></textarea>
        </div><button class="btn btn-secondary" id="updateStopsBtn">✓ Save</button> <button class="btn btn-danger" id="resetBtn">🔄 Reset All</button>
       </div>
       <h3 style="margin-top: 20px; margin-bottom: 15px; color: #667eea; font-weight: 700;">All Bookings</h3>
-      <div id="adminList"></div>
+      <div id="adminList"></div><button class="btn btn-primary" id="downloadPdfBtn" style="margin-top: 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">📥 Download PDF Report</button>
      </div>
     </div>
    </div>
   </div>
   <script>
     const STOPS = [
-      'Dehiwala', 'Mount Lavinia', 'Moratuwa', 'Panadura', 'Kalutara',
-      'Aluthgama', 'Bentota', 'Ambalangoda', 'Galle', 'Matara',
-      'Tangalle', 'Hambantota', 'Wellawaya', 'Badulla', 'Mahiyanganaya',
-      'Galaha', 'Gelioya', 'Kandy', 'Deltota'
+      'Grandpass', 'Mawanella', 'Gampola', 'Gelioya', 'Peradeniya',
+      'Galaha', 'Deltota'
+    ];
+
+    const ALL_STAFF = [
+      'ROOHUL HAQ', 'AASHIK', 'FAZLUR RAHMAN', 'ABDUR RAHMAN', 'AC MUNEER',
+      'FM UMAIR', 'SHADIK', 'LUKMAN', 'SAMEER', 'SM UMAIR', 'KM UMAIR',
+      'MAHIR MOULAVI', 'RIZVI MOULAVI', 'ASHRAF', 'AROOS', 'F AJMAL',
+      'S AJMAL', 'HAMMAD', 'SHIYAM', 'I M AMEEN', 'ABDUL AZEEZ FAZLUL',
+      'IRFAN', 'AC MUSHARRAF', 'AKRAM MULAAFAR', 'K R AASHIK', 'SHAKIR',
+      'ABDUL QAIYOOM', 'SAKEER', 'ZAKARIYYA', 'ABDULLA MOVLAVI', 'HASAN',
+      'UMAR', 'SHIHAM', 'ASHROOQ'
     ];
 
     let currentData = [];
@@ -511,11 +529,26 @@
 
     function initializeApp() {
       currentData = loadFromStorage();
+      updateStaffDropdown();
       renderStops();
       updateStopsTextarea();
       updateStopDropdowns();
       renderDashboard();
       renderAdmin();
+    }
+
+    // Update staff dropdown - hide already booked staff
+    function updateStaffDropdown() {
+      const staffSelect = document.getElementById('staffSelect');
+      const bookedStaff = currentData.map(item => item.staff_name);
+      
+      staffSelect.innerHTML = '<option value="">-- Choose name --</option>' +
+        ALL_STAFF.map(staff => `
+          <option value="${staff}" ${bookedStaff.includes(staff) ? 'disabled' : ''}>
+            ${staff} ${bookedStaff.includes(staff) ? '✓ Booked' : ''}
+          </option>
+        `).join('') +
+        '<option value="OTHER">✏️ Add my name</option>';
     }
 
     // Render bus stops
@@ -583,6 +616,7 @@
         btn.classList.remove('active');
       });
 
+      updateStaffDropdown();
       renderDashboard();
       renderAdmin();
     });
@@ -689,6 +723,7 @@
       document.getElementById('adminStaffName').value = '';
       document.getElementById('adminStopSelect').value = '';
 
+      updateStaffDropdown();
       renderAdmin();
       renderDashboard();
     });
@@ -704,6 +739,7 @@
         currentData = [];
         saveToStorage(currentData);
         showMessage('✓ All reset', 'success');
+        updateStaffDropdown();
         renderAdmin();
         renderDashboard();
         btn.removeEventListener('click', confirmReset);
@@ -762,6 +798,93 @@
       }, 3000);
     }
 
+    // Generate PDF Report
+    function generatePDF() {
+      if (currentData.length === 0) {
+        showMessage('No bookings to download', 'error');
+        return;
+      }
+
+      const summary = {};
+      currentData.forEach(item => {
+        if (!summary[item.bus_stop]) {
+          summary[item.bus_stop] = [];
+        }
+        summary[item.bus_stop].push(item.staff_name);
+      });
+
+      let htmlContent = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px;">
+          <h1 style="text-align: center; color: #667eea; margin-bottom: 10px;">🎊 Eid Trip Bus Tracker Report</h1>
+          <p style="text-align: center; color: #666; margin-bottom: 20px;">Route: Colombo → Kandy Journey</p>
+          <p style="text-align: center; color: #999; font-size: 12px; margin-bottom: 20px;">Generated on: ${new Date().toLocaleString()}</p>
+          
+          <h2 style="color: #667eea; margin-top: 20px; margin-bottom: 15px;">📊 Stop Summary</h2>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+              <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Stop</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: center;">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${STOPS.map(stop => `
+                <tr style="background: ${STOPS.indexOf(stop) % 2 === 0 ? '#f9f7ff' : 'white'};">
+                  <td style="border: 1px solid #ddd; padding: 12px;">${stop}</td>
+                  <td style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: bold; color: #667eea;">
+                    ${summary[stop] ? summary[stop].length : 0}
+                  </td>
+                </tr>
+              `).join('')}
+              <tr style="background: #f0e6ff; font-weight: bold;">
+                <td style="border: 1px solid #ddd; padding: 12px;">Total</td>
+                <td style="border: 1px solid #ddd; padding: 12px; text-align: center; color: #667eea;">${currentData.length}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 style="color: #667eea; margin-top: 30px; margin-bottom: 15px;">👥 Detailed Bookings</h2>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Name</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Stop</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${currentData.map((item, index) => `
+                <tr style="background: ${index % 2 === 0 ? '#f9f7ff' : 'white'};">
+                  <td style="border: 1px solid #ddd; padding: 12px;">${item.staff_name}</td>
+                  <td style="border: 1px solid #ddd; padding: 12px;">${item.bus_stop}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <p style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
+            🎉 Eid Trip Bus Tracker - Report Generated Successfully
+          </p>
+        </div>
+      `;
+
+      const element = document.createElement('div');
+      element.innerHTML = htmlContent;
+
+      const opt = {
+        margin: 10,
+        filename: `Eid_Trip_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+      showMessage('✓ PDF downloaded!', 'success');
+    }
+
+    // Download PDF Button
+    document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
+
     // Tab switching
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -776,5 +899,5 @@
     // Start app
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9db947b4e70a5137',t:'MTc3MzM4NjQ2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9db97ba3447c5137',t:'MTc3MzM4ODU5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
